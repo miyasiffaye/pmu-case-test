@@ -1,0 +1,86 @@
+version: "3.8"
+services:
+  coursedb:
+    image: mysql:8.0.30
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'coursedb'
+      MYSQL_ROOT_PASSWORD: 'root'
+    ports:
+      - "3306:3306"
+    expose:
+      - 3306
+    networks:
+      - pmu_network
+  configserver:
+    image: pmu/configserver:latest
+    mem_reservation: 700m
+    ports:
+      - "8090:8090"
+    networks:
+      - pmu_network
+
+  eurekaserver:
+    image: pmu/eurekaserver:latest
+    mem_reservation: 700m
+    ports:
+      - "8070:8070"
+    networks:
+      - pmu_network
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://configserver:8090/
+    depends_on:
+      - configserver
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 30s
+
+  course:
+      image: pmu/course:latest
+      mem_reservation: 700m
+      ports:
+        - "8080:8080"
+      networks:
+        - pmu_network
+      environment:
+        SPRING_PROFILES_ACTIVE : "default"
+        SPRING_CONFIG_IMPORT: optional:configserver:http://configserver:8090/
+       # EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://localhost:8070/
+      depends_on:
+        - coursedb
+        - configserver
+        - eurekaserver
+      deploy:
+        restart_policy:
+          condition: on-failure
+          delay: 15s
+          max_attempts: 3
+          window: 60s
+
+  gatewayserver:
+    image: pmu/gatewayserver:latest
+    mem_reservation: 700m
+    ports:
+      - "8088:8088"
+    networks:
+      - pmu_network
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://configserver:8090/
+      #EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://localhost:8070/
+    depends_on:
+      - configserver
+      - eurekaserver
+      - course
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 60s
+        max_attempts: 3
+        window: 120s
+networks:
+  pmu_network:
+    name: pmu_network
+

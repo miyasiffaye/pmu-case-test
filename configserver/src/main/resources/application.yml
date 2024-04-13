@@ -1,0 +1,22 @@
+---
+server:
+  port: 8090
+spring:
+  application:
+    name: configserver
+  cloud:
+    config:
+      server:
+        #git:
+          #uri: https://github.com/ansoumanana/config_pmu.git
+          #clone-on-start: true
+          #default-label: master
+
+        native:
+          search-locations: classpath:/config
+
+  profiles:
+    activate: native
+    #activate: git
+encrypt:
+  key: APODNU3093r2rbjzxcn09u213asdhy08WRFH

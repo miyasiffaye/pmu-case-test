@@ -1,0 +1,31 @@
+
+server:
+    port: 8088
+
+management:
+    endpoint:
+        shutdown:
+            enabled: true
+    auditevents:
+        enabled: true
+    endpoints:
+        web:
+            exposure:
+                include: '*'
+eureka:
+    client:
+        fetchRegistry: true
+        preferIpAddress: true
+        registerWithEureka: true
+        serviceUrl:
+            defaultZone: http://eurekaserver:8070/eureka/
+info:
+    app:
+        description: PMU  Gateway Application
+        name: Gateway Server PMU Microservice
+        version: 1.0.0
+logging:
+    level:
+        com:
+            pmu:
+                gatewayserver: DEBUG

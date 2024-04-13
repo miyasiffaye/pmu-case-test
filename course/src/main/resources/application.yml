@@ -1,0 +1,11 @@
+
+spring:
+    application:
+        name: course
+    config:
+        import: optional:configserver:http://configserver:8090/
+springdoc:
+    show-actuator: true
+    swagger-ui:
+        groups-order: DESC
+        disable-swagger-default-url: true

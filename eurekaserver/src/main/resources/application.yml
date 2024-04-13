@@ -1,0 +1,13 @@
+
+server:
+  port: 8070
+
+spring:
+  application:
+    name: eurekaserver
+  cloud:
+    loadbalancer:
+      enabled: true
+
+  config:
+    import: optional:configserver:http://configserver:8090/
